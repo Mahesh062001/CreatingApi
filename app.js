@@ -1,12 +1,11 @@
 let express = require("express");
-
-
+let app = express();
 let { open } = require("sqlite");
 let sqlite3 = require("sqlite3");
 let path = require("path");
-let app= express();
-app.use(express.json())
-let dp = null;
+
+app.use(express.json());
+let db = null;
 let requiredPath = path.join(__dirname, "cricketTeam.db");
 let initializeDbAndServer = async () => {
   db = await open({
@@ -23,14 +22,14 @@ const caseConvert = (dbObject) => {
     role: dbObject.role,
   };
 };
-//initialiseDbAndServer();
+
 app.get("/players/", async (request, response) => {
   let getData = `
     SELECT *
     FROM cricket_team;
     `;
   let result = await db.all(getData);
-  //console.log(result);
+
   response.send(result.map((eachPlayer) => caseConvert(eachPlayer)));
 });
 app.post("/players/", async (request, response) => {
@@ -52,11 +51,10 @@ app.get("/players/:playerId", async (request, response) => {
     where player_id=${playerId};
     `;
   const data = await db.get(getData);
-  response.send(caseConvert(data)));
+  response.send(caseConvert(data));
 });
 app.put("/players/:playerId/", async (request, response) => {
-  const { playerId } = request.
-    params;
+  const { playerId } = request.params;
   const data = request.body;
   const { playerName, role } = data;
   const putData = `
